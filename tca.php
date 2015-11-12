@@ -10,12 +10,13 @@ $TCA['tx_beacl_acl'] = Array (
 	'columns' => Array (
 		'type' => Array (
 			'exclude' => 1,
-			'label' => 'LLL:EXT:be_acl/locallang_db.xml:tx_beacl_acl.type',
+			'label' => 'LLL:EXT:be_acl/Resources/Private/Language/locallang_db.xml:tx_beacl_acl.type',
 			'config' => Array (
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'items' => Array (
-					Array('LLL:EXT:be_acl/locallang_db.xml:tx_beacl_acl.type.I.0', '0'),
-					Array('LLL:EXT:be_acl/locallang_db.xml:tx_beacl_acl.type.I.1', '1'),
+					Array('LLL:EXT:be_acl/Resources/Private/Language/locallang_db.xml:tx_beacl_acl.type.I.0', '0'),
+					Array('LLL:EXT:be_acl/Resources/Private/Language/locallang_db.xml:tx_beacl_acl.type.I.1', '1'),
 				),
 				'size' => 1,
 				'maxitems' => 1,
@@ -23,10 +24,11 @@ $TCA['tx_beacl_acl'] = Array (
 		),
 		'object_id' => Array (
 			'exclude' => 1,
-			'label' => 'LLL:EXT:be_acl/locallang_db.xml:tx_beacl_acl.object_id',
+			'label' => 'LLL:EXT:be_acl/Resources/Private/Language/locallang_db.xml:tx_beacl_acl.object_id',
 			'config' => Array (
 				'type' => 'select',
-				'itemsProcFunc' => 'tx_beacl_objsel->select',
+				'renderType' => 'selectSingle',
+				'itemsProcFunc' => 'KayStrobach\BeAcl\Tca\GroupSelector->select',
 				'size' => 1,
 				'minitems' => 0,
 				'maxitems' => 1,
@@ -34,22 +36,22 @@ $TCA['tx_beacl_acl'] = Array (
 		),
 		'permissions' => Array (
 			'exclude' => 1,
-			'label' => 'LLL:EXT:be_acl/locallang_db.xml:tx_beacl_acl.permissions',
+			'label' => 'LLL:EXT:be_acl/Resources/Private/Language/locallang_db.xml:tx_beacl_acl.permissions',
 			'config' => Array (
 				'type' => 'check',
 				'cols' => 5,
 				'items' => Array (
-					Array('LLL:EXT:be_acl/locallang_db.xml:tx_beacl_acl.permissions.I.0', ''),
-					Array('LLL:EXT:be_acl/locallang_db.xml:tx_beacl_acl.permissions.I.1', ''),
-					Array('LLL:EXT:be_acl/locallang_db.xml:tx_beacl_acl.permissions.I.2', ''),
-					Array('LLL:EXT:be_acl/locallang_db.xml:tx_beacl_acl.permissions.I.3', ''),
-					Array('LLL:EXT:be_acl/locallang_db.xml:tx_beacl_acl.permissions.I.4', ''),
+					Array('LLL:EXT:be_acl/Resources/Private/Language/locallang_db.xml:tx_beacl_acl.permissions.I.0', ''),
+					Array('LLL:EXT:be_acl/Resources/Private/Language/locallang_db.xml:tx_beacl_acl.permissions.I.1', ''),
+					Array('LLL:EXT:be_acl/Resources/Private/Language/locallang_db.xml:tx_beacl_acl.permissions.I.2', ''),
+					Array('LLL:EXT:be_acl/Resources/Private/Language/locallang_db.xml:tx_beacl_acl.permissions.I.3', ''),
+					Array('LLL:EXT:be_acl/Resources/Private/Language/locallang_db.xml:tx_beacl_acl.permissions.I.4', ''),
 				),
 			)
 		),
 		'recursive' => Array (
 			'exclude' => 1,
-			'label' => 'LLL:EXT:be_acl/locallang_db.xml:tx_beacl_acl.recursive',
+			'label' => 'LLL:EXT:be_acl/Resources/Private/Language/locallang_db.xml:tx_beacl_acl.recursive',
 			'config' => Array (
 				'type' => 'check'
 			)

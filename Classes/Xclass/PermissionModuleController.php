@@ -1,5 +1,7 @@
 <?php
 
+namespace KayStrobach\BeAcl\Xclass;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -25,6 +27,7 @@
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\Utility\IconUtility;
+use TYPO3\CMS\Beuser\Controller\PermissionAjaxController;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -35,7 +38,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * Bugfixes applied:
  * #25942, #25835, #13019, #13176, #13175 Jan Bartels
  */
-class Tx_BeAcl_Xclass_PermissionModuleController extends SC_mod_web_perm_index {
+class PermissionModuleController extends SC_mod_web_perm_index {
 
 	/*****************************
 	 *
@@ -155,9 +158,9 @@ class Tx_BeAcl_Xclass_PermissionModuleController extends SC_mod_web_perm_index {
 				($data['row']['perms_userid'] ? $data['row']['perms_userid'] : '');
 
 			if ($data['row']['perms_userid'] && !$beUserArray[$data['row']['perms_userid']]) {
-				$userName = SC_mod_web_perm_ajax::renderOwnername($pageId, $data['row']['perms_userid'], htmlspecialchars(GeneralUtility::fixed_lgd_cs($userName, 20)), FALSE);
+				$userName = PermissionAjaxController::renderOwnername($pageId, $data['row']['perms_userid'], htmlspecialchars(GeneralUtility::fixed_lgd_cs($userName, 20)), FALSE);
 			} else {
-				$userName = SC_mod_web_perm_ajax::renderOwnername($pageId, $data['row']['perms_userid'], htmlspecialchars(GeneralUtility::fixed_lgd_cs($userName, 20)));
+				$userName = PermissionAjaxController::renderOwnername($pageId, $data['row']['perms_userid'], htmlspecialchars(GeneralUtility::fixed_lgd_cs($userName, 20)));
 			}
 
 			$groupName = $beGroupArray[$data['row']['perms_groupid']] ?
@@ -165,9 +168,9 @@ class Tx_BeAcl_Xclass_PermissionModuleController extends SC_mod_web_perm_index {
 				($data['row']['perms_groupid'] ? $data['row']['perms_groupid'] : '');
 
 			if ($data['row']['perms_groupid'] && !$beGroupArray[$data['row']['perms_groupid']]) {
-				$groupName = SC_mod_web_perm_ajax::renderGroupname($pageId, $data['row']['perms_groupid'], htmlspecialchars(GeneralUtility::fixed_lgd_cs($groupName, 20)), FALSE);
+				$groupName = PermissionAjaxController::renderGroupname($pageId, $data['row']['perms_groupid'], htmlspecialchars(GeneralUtility::fixed_lgd_cs($groupName, 20)), FALSE);
 			} else {
-				$groupName = SC_mod_web_perm_ajax::renderGroupname($pageId, $data['row']['perms_groupid'], htmlspecialchars(GeneralUtility::fixed_lgd_cs($groupName, 20)));
+				$groupName = PermissionAjaxController::renderGroupname($pageId, $data['row']['perms_groupid'], htmlspecialchars(GeneralUtility::fixed_lgd_cs($groupName, 20)));
 			}
 
 			// Seeing if editing of permissions are allowed for that page:
@@ -190,9 +193,9 @@ class Tx_BeAcl_Xclass_PermissionModuleController extends SC_mod_web_perm_index {
 
 			if (!$disableOldPermissionSystem) {
 				$cells[] = '
-				<td' . $bgCol . ' nowrap="nowrap">' . ($pageId ? SC_mod_web_perm_ajax::renderPermissions($data['row']['perms_user'], $pageId, 'user') . ' ' . $userName : '') . '</td>
-				<td' . $bgCol . ' nowrap="nowrap">' . ($pageId ? SC_mod_web_perm_ajax::renderPermissions($data['row']['perms_group'], $pageId, 'group') . ' ' . $groupName : '') . '</td>
-				<td' . $bgCol . ' nowrap="nowrap">' . ($pageId ? ' ' . SC_mod_web_perm_ajax::renderPermissions($data['row']['perms_everybody'], $pageId, 'everybody') : '') . '</td>
+				<td' . $bgCol . ' nowrap="nowrap">' . ($pageId ? PermissionAjaxController::renderPermissions($data['row']['perms_user'], $pageId, 'user') . ' ' . $userName : '') . '</td>
+				<td' . $bgCol . ' nowrap="nowrap">' . ($pageId ? PermissionAjaxController::renderPermissions($data['row']['perms_group'], $pageId, 'group') . ' ' . $groupName : '') . '</td>
+				<td' . $bgCol . ' nowrap="nowrap">' . ($pageId ? ' ' . PermissionAjaxController::renderPermissions($data['row']['perms_everybody'], $pageId, 'everybody') : '') . '</td>
 				<td' . $bgCol . ' nowrap="nowrap">' . ($data['row']['editlock'] ? '<span id="el_' . $pageId . '" class="editlock"><a class="editlock" onclick="WebPermissions.toggleEditLock(\'' . $pageId . '\', \'1\');" title="' . $GLOBALS['LANG']->getLL('EditLock_descr', TRUE) . '">' . IconUtility::getSpriteIcon('status-warning-lock') . '</a></span>' : ($pageId === 0 ? '' : '<span id="el_' . $pageId . '" class="editlock"><a class="editlock" onclick="WebPermissions.toggleEditLock(\'' . $pageId . '\', \'0\');" title="Enable the &raquo;Admin-only&laquo; edit lock for this page">[+]</a></span>')) . '</td>
 			';
 			}

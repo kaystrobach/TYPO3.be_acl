@@ -1,35 +1,39 @@
 <?php
 
+namespace KayStrobach\BeAcl\Hooks;
 
-/***************************************************************
-*  Copyright notice
-*
-*  (c) 2005 Sebastian Kurfuerst (sebastian@garbage-group.de)
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+	/***************************************************************
+	 *  Copyright notice
+	 *
+	 *  (c) 2005 Sebastian Kurfuerst (sebastian@garbage-group.de)
+	 *  All rights reserved
+	 *
+	 *  This script is part of the TYPO3 project. The TYPO3 project is
+	 *  free software; you can redistribute it and/or modify
+	 *  it under the terms of the GNU General Public License as published by
+	 *  the Free Software Foundation; either version 2 of the License, or
+	 *  (at your option) any later version.
+	 *
+	 *  The GNU General Public License can be found at
+	 *  http://www.gnu.org/copyleft/gpl.html.
+	 *
+	 *  This script is distributed in the hope that it will be useful,
+	 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+	 *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	 *  GNU General Public License for more details.
+	 *
+	 *  This copyright notice MUST APPEAR in all copies of the script!
+	 ***************************************************************/
+use TYPO3\CMS\Backend\Utility\BackendUtility;
+
 /**
  * Backend ACL - Functions re-calculating permissions
  *
  * @author  Sebastian Kurfuerst <sebastian@typo3.org>
  */
 
-class tx_beacl_userAuthGroup {
+class UserAuthGroup
+{
 
 	/**
 	 * Returns a combined binary representation of the current users permissions for the page-record, $row.
@@ -50,7 +54,7 @@ class tx_beacl_userAuthGroup {
 			$out = 0;
 		}
 
-		$rootLine = t3lib_BEfunc::BEgetRootLine($row['uid']);
+		$rootLine = BackendUtility::BEgetRootLine($row['uid']);
 
 		$i = 0;
 		$takeUserIntoAccount = 1;
@@ -100,33 +104,32 @@ class tx_beacl_userAuthGroup {
 	 */
 
 	function getPagePermsClause($params, $that)	{
-
 		// Load cache from BE User data
 		$cache = array();
 		if (!empty($GLOBALS['BE_USER'])) {
-		  $cache = $GLOBALS['BE_USER']->getSessionData('be_acl');
+			$cache = $GLOBALS['BE_USER']->getSessionData('be_acl');
 		}
 
-			// Check if we can return something from cache
+		// Check if we can return something from cache
 		if (is_array($cache[$that->user['uid']])
 			&& $cache[$that->user['uid']][$params['perms']]) {
 			return $cache[$that->user['uid']][$params['perms']];
 		}
 
-			// get be_acl config in EM
+		// get be_acl config in EM
 		$beAclConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['be_acl']);
 		if(!$beAclConfig['disableOldPermissionSystem']) {
 			$str = $params['currentClause'];
 		} else {
 			$str = '1 = 2';
 		}
-			// get some basic variables
+		// get some basic variables
 		$perms = $params['perms'];
 		$this->aclPageList = Array();
 
-			// get allowed IDs for user
+		// get allowed IDs for user
 		$this->getPagePermsClause_single(0, $that->user['uid'], $perms);
-			// get allowed IDs for every single group
+		// get allowed IDs for every single group
 		if($that->groupList) {
 			$groupList = explode(',',$that->groupList);
 			foreach($groupList as $singleGroup) {
@@ -134,24 +137,27 @@ class tx_beacl_userAuthGroup {
 			}
 		}
 		if(!empty($this->aclPageList)) {
-				// put all page IDs together to the final SQL string
+			// put all page IDs together to the final SQL string
 			$str = '( '.$str.' ) OR ( pages.uid IN ('.implode(',',$this->aclPageList).') )';
 
-				// if the user is in a workspace, that has to be taken into account
-				// see t3lib_BEfunc::getWorkspaceVersionOfRecord() for the source of this query
+			// if the user is in a workspace, that has to be taken into account
+			// see t3lib_BEfunc::getWorkspaceVersionOfRecord() for the source of this query
 			if ($that->workspace)	{
 				$str .= ' OR ( pages.t3ver_wsid='.intval($that->workspace).' AND pages.t3ver_oid IN ('.implode(',',$this->aclPageList).') )';
 			}
 		}
 
-			// for safety, put whole where query part into brackets so it won't interfere with other parts of the page
+		// for safety, put whole where query part into brackets so it won't interfere with other parts of the page
 		$str = ' ( '.$str.' ) ';
 
-			// Store data in cache
+		// Store data in cache
 		$cache[$that->user['uid']][$params['perms']] = $str;
 		if (!empty($GLOBALS['BE_USER'])) {
 			$GLOBALS['BE_USER']->setAndSaveSessionData('be_acl', $cache);
 		}
+
+		debug($str);
+
 		return $str;
 	}
 
@@ -166,9 +172,9 @@ class tx_beacl_userAuthGroup {
 	 * @return nothing, fills $this->aclPageList
 	 **/
 	protected function getPagePermsClause_single($type, $object_id, $perms) {
-			// reset aclDisallowed
+		// reset aclDisallowed
 		$this->aclDisallowed = Array();
-			// 1. fetch all ACLs relevant for the current user/group
+		// 1. fetch all ACLs relevant for the current user/group
 		$aclAllowed = Array();
 		$where = ' ( (type = '.intval($type).' AND object_id = '.intval($object_id).')';
 
@@ -185,7 +191,7 @@ class tx_beacl_userAuthGroup {
 		}
 
 		if($aclAllowed) {
-				// get all "deny" acls if there are allow ACLs
+			// get all "deny" acls if there are allow ACLs
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 				'pid, recursive',
 				'tx_beacl_acl',
@@ -214,7 +220,7 @@ class tx_beacl_userAuthGroup {
 	 * @return nothing, fills $this->aclPageList
 	 **/
 	protected function aclTraversePageTree($pid) {
-			// if there is a disallow ACL for the current page, don't add the page to the aclPageList
+		// if there is a disallow ACL for the current page, don't add the page to the aclPageList
 		if(array_key_exists($pid, $this->aclDisallowed)) {
 			if($this->aclDisallowed[$pid] == 1) {
 				return 0; // if recursive, stop processing
@@ -223,12 +229,10 @@ class tx_beacl_userAuthGroup {
 			$this->aclPageList[$pid] = $pid;
 		}
 
-			// find subpages and call function itself again
+		// find subpages and call function itself again
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid','pages', 'pid='.intval($pid).' AND deleted=0');
 		while($result = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$this->aclTraversePageTree($result['uid']);
 		}
 	}
 }
-
-?>
